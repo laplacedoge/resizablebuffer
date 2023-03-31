@@ -1,0 +1,3 @@
+[submodule "bufferqueue"]
+	path = bufferqueue
+	url = https://github.com/laplacedoge/bufferqueue.git
