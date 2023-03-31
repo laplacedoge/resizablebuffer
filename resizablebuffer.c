@@ -143,6 +143,11 @@ rbuf_res rbuf_resize(rbuf_ctx *ctx, rbuf_u32 size) {
 
     RBUF_ASSERT(ctx != NULL);
 
+    /* check whether the size is too large. */
+    if (size > ctx->conf.size_max) {
+        return RBUF_ERR_BAD_SIZE;
+    }
+
     new_block_num_quotient = size / ctx->conf.block_size;
     new_block_num_remainder = size % ctx->conf.block_size;
     new_block_num = new_block_num_quotient + ((new_block_num_remainder != 0) ? 1 : 0);
