@@ -113,6 +113,8 @@ rbuf_res rbuf_resize(rbuf_ctx *ctx, rbuf_u32 size);
 
 rbuf_res rbuf_copy_from(rbuf_ctx *ctx, const void *buff, rbuf_u32 offs, rbuf_u32 size);
 
+rbuf_res rbuf_append(rbuf_ctx *ctx, const void *buff, rbuf_u32 size);
+
 rbuf_res rbuf_copy_to(rbuf_ctx *ctx, void *buff, rbuf_u32 offs, rbuf_u32 size);
 
 #endif

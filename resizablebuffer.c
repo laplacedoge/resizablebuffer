@@ -272,6 +272,23 @@ rbuf_res rbuf_copy_from(rbuf_ctx *ctx, const void *buff, rbuf_u32 offs, rbuf_u32
 }
 
 /**
+ * @brief append external data to the end of the resizable buffer.
+ * 
+ * @param ctx context pointer.
+ * @param buff external buffer pointer.
+ * @param size data appending size;
+*/
+rbuf_res rbuf_append(rbuf_ctx *ctx, const void *buff, rbuf_u32 size) {
+    rbuf_res res;
+
+    RBUF_ASSERT(ctx != NULL);
+    RBUF_ASSERT(buff != NULL);
+
+    res = rbuf_copy_from(ctx, buff, ctx->cache.buff_size, size);
+    return res;
+}
+
+/**
  * @brief copy data in the resizable buffer into the external buffer.
  * 
  * @param ctx context pointer.
