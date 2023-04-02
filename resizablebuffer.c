@@ -152,11 +152,8 @@ rbuf_res rbuf_resize(rbuf_ctx *ctx, rbuf_u32 size) {
     new_block_num_remainder = size % ctx->conf.block_size;
     new_block_num = new_block_num_quotient + ((new_block_num_remainder != 0) ? 1 : 0);
     if (new_block_num > ctx->cache.block_num) {
-
-        /* when we have to add more blocks. */
-
         block_num_diff = new_block_num - ctx->cache.block_num;
-        for (int i = 0; i < block_num_diff; i++) {
+        for (rbuf_u32 i = 0; i < block_num_diff; i++) {
             mod_bque_res = bque_enqueue(ctx->bque, NULL, ctx->conf.block_size);
             if (mod_bque_res != BQUE_OK) {
                 if (mod_bque_res == BQUE_ERR_NO_MEM) {
@@ -170,7 +167,7 @@ rbuf_res rbuf_resize(rbuf_ctx *ctx, rbuf_u32 size) {
         ctx->cache.buff_cap = ctx->conf.block_size * new_block_num;
     } else if (new_block_num < ctx->cache.block_num) {
         block_num_diff = ctx->cache.block_num - new_block_num;
-        for (int i = 0; i < block_num_diff; i++) {
+        for (rbuf_u32 i = 0; i < block_num_diff; i++) {
             mod_bque_res = bque_forfeit(ctx->bque, NULL, NULL);
             if (mod_bque_res != BQUE_OK) {
                 return RBUF_ERR;
@@ -254,8 +251,8 @@ rbuf_res rbuf_copy_from(rbuf_ctx *ctx, const void *buff, rbuf_u32 offs, rbuf_u32
         buff_offs = curt_size;
         rest_size = size - curt_size;
 
-        for (bque_s32 i = starting_block_idx + 1; i < ending_block_idx + 1; i++) {
-            mod_bque_res = bque_item(ctx->bque, i, &mod_bque_buff);
+        for (bque_u32 i = starting_block_idx + 1; i < ending_block_idx + 1; i++) {
+            mod_bque_res = bque_item(ctx->bque, (bque_s32)i, &mod_bque_buff);
             if (mod_bque_res != BQUE_OK) {
                 return RBUF_ERR;
             }
@@ -348,8 +345,8 @@ rbuf_res rbuf_copy_to(rbuf_ctx *ctx, void *buff, rbuf_u32 offs, rbuf_u32 size) {
         buff_offs = curt_size;
         rest_size = size - curt_size;
 
-        for (bque_s32 i = starting_block_idx + 1; i < ending_block_idx + 1; i++) {
-            mod_bque_res = bque_item(ctx->bque, i, &mod_bque_buff);
+        for (bque_u32 i = starting_block_idx + 1; i < ending_block_idx + 1; i++) {
+            mod_bque_res = bque_item(ctx->bque, (bque_s32)i, &mod_bque_buff);
             if (mod_bque_res != BQUE_OK) {
                 return RBUF_ERR;
             }
