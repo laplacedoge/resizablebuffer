@@ -39,7 +39,12 @@
 struct _rbuf_ctx {
     bque_ctx *bque;
     struct _rbuf_ctx_conf {
+
+        /* block size of the resizable buffer. */
         rbuf_u32 block_size;
+
+        /* maximum size of the resizable buffer,
+           when it is 0, it means no limit. */
         rbuf_u32 size_max;
     } conf;
     struct _rbuf_ctx_cache {
@@ -144,7 +149,8 @@ rbuf_res rbuf_resize(rbuf_ctx *ctx, rbuf_u32 size) {
     RBUF_ASSERT(ctx != NULL);
 
     /* check whether the size is too large. */
-    if (size > ctx->conf.size_max) {
+    if (ctx->conf.size_max != 0 &&
+        size > ctx->conf.size_max) {
         return RBUF_ERR_BAD_SIZE;
     }
 
@@ -214,10 +220,9 @@ rbuf_res rbuf_copy_from(rbuf_ctx *ctx, const void *buff, rbuf_u32 offs, rbuf_u32
 
     new_size = offs + size;
 
-    /* if the new buffer size is greater
-       than current buffer capacity, then
-       resize the whole resizable buffer. */
-    if (new_size > ctx->cache.buff_cap) {
+    /* if the new buffer size is greater than
+       the buffer size, resize the buffer. */
+    if (new_size > ctx->cache.buff_size) {
         res = rbuf_resize(ctx, new_size);
         if (res != RBUF_OK) {
             return res;
@@ -225,7 +230,8 @@ rbuf_res rbuf_copy_from(rbuf_ctx *ctx, const void *buff, rbuf_u32 offs, rbuf_u32
     }
 
     starting_block_idx = offs / ctx->conf.block_size;
-    ending_block_idx = new_size / ctx->conf.block_size;
+    ending_block_idx = new_size / ctx->conf.block_size -
+                       ((new_size % ctx->conf.block_size == 0) ? 1 : 0);
     if (starting_block_idx == ending_block_idx) {
         mod_bque_res = bque_item(ctx->bque, starting_block_idx, &mod_bque_buff);
         if (mod_bque_res != BQUE_OK) {
